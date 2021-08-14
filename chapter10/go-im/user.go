@@ -1,6 +1,8 @@
 package main
 
-import "net"
+import (
+	"net"
+)
 
 type User struct {
 	Name   string
@@ -49,8 +51,22 @@ func (this *User) Offline() {
 	this.server.BroadCast(this, " quit.")
 }
 
+// 给当前用户对应的客户端发送消息
+func (this *User) SendMsg(msg string) {
+	this.conn.Write([]byte(msg))
+}
+
 // 用户处理消息的业务
 func (this *User) DoMessage(msg string) {
+	if msg == "who" {
+		// 查询当前用户有哪些
+		this.server.mapLock.Lock()
+		for _, user := range this.server.OnlineMap {
+			onlineMsg := "[" + user.Addr + "]" + user.Name + ":" + " online."
+			this.SendMsg(onlineMsg)
+		}
+		this.server.mapLock.Unlock()
+	}
 	this.server.BroadCast(this, msg)
 }
 
