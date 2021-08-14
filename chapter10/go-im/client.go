@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net"
 )
@@ -30,8 +31,21 @@ func NewClient(ip string, port int) *Client {
 	return client
 }
 
+var serverIp string
+var serverPort int
+
+// debug: go run ./client.go -ip 127.0.0.1 -port 8080
+// ./client -ip 127.0.0.1 -port 8080
+func init() {
+	flag.StringVar(&serverIp, "ip", "127.0.0.1", "设置服务器ip")
+	flag.IntVar(&serverPort, "port", 8080, "设置服务器端口")
+}
+
 func main() {
-	client := NewClient("127.0.0.1", 8080)
+	// 只有加上 flag.Parse()，才能真正的解析到命令行参数，否则一直都是默认值
+	flag.Parse()
+
+	client := NewClient(serverIp, serverPort)
 	if client == nil {
 		fmt.Println(">>>>>> connect fail..")
 		return
