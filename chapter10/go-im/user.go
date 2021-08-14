@@ -2,6 +2,7 @@ package main
 
 import (
 	"net"
+	"strings"
 )
 
 type User struct {
@@ -80,6 +81,17 @@ func (this *User) DoMessage(msg string) {
 			this.server.mapLock.Unlock()
 			this.Name = newName
 			this.SendMsg(newName + " rename sccuss\n")
+		}
+	} else if len(msg) > 4 && msg[0:3] == "to|" {
+		// 消息格式 to|张三|message
+		arr := strings.Split(msg, "|")
+		// 获取对方用户名 张三
+		_, ok := this.server.OnlineMap[arr[1]]
+		if ok {
+			// 根据用户名获取用户对象
+			receiver := this.server.OnlineMap[arr[1]]
+			// 获取消息内容，根据对方的用户对象，将消息发送过去
+			receiver.SendMsg(this.Name + " send a message: " + arr[2] + "\n")
 		}
 	} else {
 		this.server.BroadCast(this, msg)
