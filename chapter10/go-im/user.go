@@ -3,26 +3,55 @@ package main
 import "net"
 
 type User struct {
-	Name string
-	Addr string
-	C    chan string // 当前用户的channel
-	conn net.Conn
+	Name   string
+	Addr   string
+	C      chan string // 当前用户的channel
+	conn   net.Conn
+	server *Server
 }
 
-func NewUser(conn net.Conn) *User {
+func NewUser(conn net.Conn, server *Server) *User {
 	userAddr := conn.RemoteAddr().String()
 
 	user := &User{
-		Name: userAddr,
-		Addr: userAddr,
-		C:    make(chan string),
-		conn: conn,
+		Name:   userAddr,
+		Addr:   userAddr,
+		C:      make(chan string),
+		conn:   conn,
+		server: server,
 	}
 
 	// 每次创建 user，则启动监听
 	go user.ListenMessage()
 
 	return user
+}
+
+// 用户上线业务
+func (this *User) Online() {
+	// 当前用户上线，要将用户加入到 server OnlineMap
+	this.server.mapLock.Lock()
+	this.server.OnlineMap[this.Name] = this
+	this.server.mapLock.Unlock()
+
+	// 广播当前用户上线消息
+	this.server.BroadCast(this, " join now.")
+}
+
+// 用户下线业务
+func (this *User) Offline() {
+	// 当前用户上线，要将用户加入到 server OnlineMap
+	this.server.mapLock.Lock()
+	delete(this.server.OnlineMap, this.Name)
+	this.server.mapLock.Unlock()
+
+	// 广播当前用户上线消息
+	this.server.BroadCast(this, " quit.")
+}
+
+// 用户处理消息的业务
+func (this *User) DoMessage(msg string) {
+	this.server.BroadCast(this, msg)
 }
 
 // 监听当前 User Channel 的方法，一旦有消息，就直接发送给对端客户端
