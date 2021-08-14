@@ -72,7 +72,7 @@ func (this *Server) Handler(conn net.Conn) {
 			}
 
 			// 提取用户的消息，并去除 '\n'
-			msg := string(buf[:len(buf)-1])
+			msg := string(buf[:n-1])
 
 			// 将得到的消息进行广播
 			user.DoMessage(msg)
@@ -97,6 +97,8 @@ func (this *Server) Start() {
 
 	// 启动监听Message的goroutine
 	go this.ListenMessager()
+
+	fmt.Printf("server started. go-im listen at %d\n", this.Port)
 
 	// accept
 	for {

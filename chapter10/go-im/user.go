@@ -62,12 +62,29 @@ func (this *User) DoMessage(msg string) {
 		// 查询当前用户有哪些
 		this.server.mapLock.Lock()
 		for _, user := range this.server.OnlineMap {
-			onlineMsg := "[" + user.Addr + "]" + user.Name + ":" + " online."
+			onlineMsg := "[" + user.Addr + "]" + user.Name + ":" + " online.\n"
+			// 告诉当前用户
 			this.SendMsg(onlineMsg)
 		}
 		this.server.mapLock.Unlock()
+	} else if len(msg) > 7 && msg[0:7] == "rename|" {
+		// 消息格式：rename|张三
+		newName := msg[7:]
+		_, ok := this.server.OnlineMap[newName]
+		if ok {
+			this.SendMsg(newName + " has been used\n")
+		} else {
+			this.server.mapLock.Lock()
+			delete(this.server.OnlineMap, this.Name)
+			this.server.OnlineMap[newName] = this
+			this.server.mapLock.Unlock()
+			this.Name = newName
+			this.SendMsg(newName + " rename sccuss\n")
+		}
+	} else {
+		this.server.BroadCast(this, msg)
 	}
-	this.server.BroadCast(this, msg)
+
 }
 
 // 监听当前 User Channel 的方法，一旦有消息，就直接发送给对端客户端
