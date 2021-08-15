@@ -12,6 +12,7 @@ func main() {
 
 	// file: pair<type:*os.File, value:"../docs/hello.txt"文件描述符>
 	file, err := os.OpenFile(path+"/docs/hello.txt", os.O_RDWR, 0)
+	defer file.Close()
 	if err != nil {
 		fmt.Println("open file error,", err)
 		return
