@@ -25,4 +25,6 @@ func main() {
 	for index, item := range myMap {
 		fmt.Println("index is", index, ", value is", item)
 	}
+
+	fmt.Println(myMap[5] == "", myMap[10] == "", myMap[0] == "BeiJing")
 }
