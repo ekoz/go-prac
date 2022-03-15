@@ -5,8 +5,8 @@
 在撸代码的过程中，在环境变量这块耽误了一些时间
 ![](docs/gomod_env.png)
 ```
-# 这里刘老师讲的非常细致，把direct也讲清楚了
-go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/
+# 这里刘老师讲的非常细致，把 `direct` 也讲清楚了
+go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
 go env -w GO111MODULE=on
 GOPATH 开发者go的项目默认路径
 GOROOT 源码包所在路径
