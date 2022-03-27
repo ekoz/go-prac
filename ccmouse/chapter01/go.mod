@@ -1,3 +1,3 @@
 module ibothub.com/go-prac/ccmouse
 
-go 1.17
+go 1.18
