@@ -65,14 +65,48 @@ func findOne(db *gorm.DB, id int) {
 // 查询数据
 func findByName(db *gorm.DB, name string) {
 	var userList []User
-	if len(name) > 0 {
-		db.Find(&userList, "name like ?", name)
-	} else {
-		db.Find(&userList)
-	}
+
+	// if len(name) > 0 {
+	// 	db.Find(&userList, "name like ?", name)
+	// } else {
+	// 	db.Find(&userList)
+	// }
+
+	db.Where("name like ?", name).Find(&userList)
+
 	for _, user := range userList {
 		fmt.Printf("%v\n", user)
 	}
+}
+
+// 更新
+func update(db *gorm.DB) {
+	var u1, u2 User
+
+	db.First(&u1, 1)
+	fmt.Printf("%v\n", u1)
+	u1.Age = u1.Age + 1
+	// save 是更新所有字段
+	db.Debug().Save(u1)
+
+	db.First(&u2, 2)
+	fmt.Printf("%v\n", u2)
+	// updates 或 update 是更新指定字段，而且是该字段值存在变化时才更新
+	db.Debug().Model(&u2).Updates(User{Age: 20})
+
+	m1 := map[string]interface{}{
+		"name": "zhangfei",
+		"age":  32,
+		"sex":  1,
+	}
+	db.Debug().Model(&u2).Updates(m1)
+
+	// 忽略某些字段，更新其他字段
+	// db.Model(&u2).Omit("name", "age").Updates(m1)
+
+	// 选定更新字段，只更新 age 字段
+	// db.Model(&u2).Select("age").Updates(m1)
+
 }
 
 func main() {
@@ -107,9 +141,11 @@ func main() {
 	// batchInsert(db)
 
 	//
-	findOne(db, 4)
+	// findOne(db, 4)
 
 	//
-	findByName(db, "%司马")
+	// findByName(db, "司马%")
+
+	update(db)
 
 }
