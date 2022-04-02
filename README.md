@@ -19,3 +19,10 @@ GOPRIVATE 私仓地址
 ## gomod
 上个月被 import 的问题困扰过，听完今天的课，也就知道如何使用了。
 ![](docs/gomod_init.png)
+
+
+## vscode 中的路径问题
+[VSCode在新GO安装中找不到程序包](https://www.5axxw.com/questions/content/lz8ywq)
+
+## 参考资料
+[GORM 2.0 发布说明](https://gorm.io/zh_CN/docs/v2_release_note.html)
