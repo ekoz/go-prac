@@ -11,14 +11,16 @@ import (
 func main() {
 	c := make(chan int)
 
-	go func() {
-		defer fmt.Println("子线程.Defer")
-		fmt.Println("子线程执行完毕..")
-		c <- 666
-	}()
+	// go func() {
+	// 	defer fmt.Println("子线程.Defer")
+	// 	fmt.Println("子线程执行完毕..")
+	// 	c <- 666
+	// }()
 
 	// <-c 必须连在一起，不能分开
-	num := <-c
+	// num := <-c
+	num := 0
+	fmt.Printf("c: %v\n", len(c))
 
 	fmt.Printf("主线程接收到子线程信号\"%d\"，主线程执行完毕", num)
 }
