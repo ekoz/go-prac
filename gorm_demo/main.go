@@ -92,9 +92,10 @@ func update(db *gorm.DB) {
 	db.First(&u2, 2)
 	fmt.Printf("%v\n", u2)
 	// updates 或 update 是更新指定字段，而且是该字段值存在变化时才更新
+	// update 只更新一个字段
 	db.Debug().Model(&u2).Updates(User{Age: 20})
 
-	m1 := map[string]interface{}{
+	m1 := map[string]any{
 		"name": "zhangfei",
 		"age":  32,
 		"sex":  1,
@@ -106,6 +107,24 @@ func update(db *gorm.DB) {
 
 	// 选定更新字段，只更新 age 字段
 	// db.Model(&u2).Select("age").Updates(m1)
+
+	// 让所有数据年龄都加上1
+	db.Debug().Model(&User{}).Where("age>1").Updates(map[string]interface{}{"age": gorm.Expr("age*?+?", 1, 1)})
+
+}
+
+// 删除
+func delete(db *gorm.DB) {
+	// 必须保证主键有值，如果主键没有值，相当于是删除所有数据
+	// 逻辑删除
+	var u1 = User{}
+	u1.ID = 1
+	db.Delete(&u1)
+
+	db.Where("name like ?", "%司马%").Delete(&User{})
+
+	// 物理删除
+	db.Unscoped().Delete(&u1)
 
 }
 
@@ -146,6 +165,8 @@ func main() {
 	//
 	// findByName(db, "司马%")
 
-	update(db)
+	// update(db)
+
+	delete(db)
 
 }
