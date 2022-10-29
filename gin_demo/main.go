@@ -20,12 +20,27 @@ type User struct {
 	Password string `form:"password"`
 }
 
-// 权限过滤中间件
+// 权限过滤中间件，拦截器
 func securityFilter() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		fmt.Println("security filter in..")
-		c.Next()
+		token := c.GetHeader("token")
+		if token == "" {
+			// 伪代码，判断用户是否有权限，如果有权限，就通过
+			c.Next()
+		}
+		// 否则放弃
+		c.Abort()
 		fmt.Println("security filter out..")
+	}
+}
+
+// 方法耗时拦截器
+func stopWatchFilter() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		fmt.Println("stop watch filter in..")
+		c.Next()
+		fmt.Println("stop watch filter out..")
 	}
 }
 
@@ -38,7 +53,7 @@ func main() {
 	r.GET("/hello", sayHello)
 
 	// 获取路径中的参数
-	r.GET("/user", func(c *gin.Context) {
+	r.GET("/user", stopWatchFilter(), func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"name": c.Query("name"),
 			"age":  c.Query("age"),
